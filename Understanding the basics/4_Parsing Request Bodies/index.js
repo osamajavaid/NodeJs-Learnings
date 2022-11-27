@@ -9,7 +9,7 @@ const fs = require('fs')
     if(url === '/'){
         res.write('<html>')
         res.write('<head><title>Routing Request</title></head>')
-        res.write('<body><h1>Just post your data and see what happens</h1><form action="/message" method="Post" name="message"><input type="text"/> <button type="submit">Submit</button></form></body>')
+        res.write('<body><h1>Just post your data and see what happens</h1><form action="/message" method="POST"><input type="text" name="message"/> <button type="submit">Submit</button></form></body>')
         res.write('</html>')
         return res.end()
     }
@@ -17,7 +17,7 @@ const fs = require('fs')
     if(url === '/message' && method === 'POST'){
         const body = []
         
-        req.on('data', (chunk) => {
+        req.on("data", (chunk) => {
             console.log('wtf')
             console.log(body)
             console.log(chunk)
@@ -25,12 +25,13 @@ const fs = require('fs')
             
         });
         
-        req.on('end', () => {
+        req.on("end", () => {
             const parsedBody = Buffer.concat(body).toString()
-            console.log(parsedBody)
+            const message = parsedBody.split('=')[1]
+            fs.writeFileSync('message.txt', message)
+            console.log(message)
         });
 
-        fs.writeFileSync('message.txt', 'dummy text file')
         res.statusCode = 302
         res.setHeader('Location', '/')
         return res.end()
